@@ -1,6 +1,5 @@
 var data = {};
 var categories = {};
-var dangerStatus = {};
 var map;
 var lineMemory = [];
 
@@ -85,17 +84,6 @@ var updateSidebar = function (marker) {
   }
 }
 
-
-function onEachFeature(feature, layer) {
-  // does this feature have a property named popupContent?
-  if (feature.properties && feature.properties.name) {
-    layer.bindPopup(`
-    <b>${feature.properties.name}</b><br>
-    ${feature.properties.popupContent}<br>
-    <a href="https://whc.unesco.org/en/list/${feature.properties.id_no}">More Info...</a>
-`);
-  }
-}
 /*
  * Main function that generates Leaflet markers from read CSV data
  */
@@ -106,7 +94,7 @@ var addLines = function (data, color = "#000000") {
       break;
     }
     var d1 = data[i];
-    var d2 = data[i+1];
+    var d2 = data[i + 1];
     lineMemory.push([d1, d2]);
 
     var myLines = [{
@@ -155,7 +143,6 @@ var addMarkers = function (data) {
     // Add an empty group if doesn't yet exist
     if (!categories[d.category]) { categories[d.category] = []; }
     if (!categories[d.danger]) { categories[d.danger === 1 ? "In Danger" : "Safe"] = []; }
-    if (!dangerStatus[d.danger]) { dangerStatus[d.danger === 1 ? "In Danger" : "Safe"] = []; }
 
     // Create a new place marker
     var m = L.marker(
@@ -178,7 +165,6 @@ var addMarkers = function (data) {
     // Add this new place marker to an appropriate group
     categories[d.category].push(m);
     categories[d.danger === 1 ? "In Danger" : "Safe"].push(m);
-    dangerStatus[d.danger === 1 ? "In Danger" : "Safe"].push(m);
     if (d.slug === hashName) { activeMarker = m; }
   }
 
@@ -186,11 +172,6 @@ var addMarkers = function (data) {
   for (var g in categories) {
     categories[g] = L.layerGroup(categories[g]);
     categories[g].addTo(map);
-  }
-
-  for (var g in dangerStatus) {
-    dangerStatus[g] = L.layerGroup(dangerStatus[g]);
-    dangerStatus[g].addTo(map);
   }
 
   // Add layer control to the map
@@ -204,44 +185,41 @@ var addMarkers = function (data) {
   L.control.layers({}, categories, { collapsed: true }).addTo(map);
   $('.leaflet-control-layers-overlays').prepend('<h3 class="mt0 mb1 f5 black-30">Categories</h3>');
 
-
-  
+  // Add event listener to show/hide lines
   map.on('overlayadd overlayremove', function (eventLayer) {
     var layerName = eventLayer.name;
     if (layerName === "In Danger") {
-      if(eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd")
         addLines(InDangerArr, "#b30000");
       else
         removeLines(InDangerArr);
     }
     else if (layerName === "Safe") {
-      if(eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd")
         addLines(SafeArr, "#249054");
       else
         removeLines(SafeArr);
     }
     else if (layerName === "Natural") {
-      if(eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd")
         addLines(NatureArr, "#3375cd");
       else
         removeLines(NatureArr);
     }
     else if (layerName === "Mixed") {
-      if(eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd")
         addLines(MixedArr, "#b30086");
       else
         removeLines(MixedArr);
     }
     else if (layerName === "Cultural") {
-      if(eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd")
         addLines(CulturalArr, "#cdba33");
       else
         removeLines(CulturalArr);
     }
 
   });
-
-
   // If name in hash, activate it
   if (activeMarker) { activeMarker.fire('click') }
 

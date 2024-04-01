@@ -3,6 +3,7 @@
   overflow-y: scroll;
   opacity: 0.9;
   background-color: rgb(51, 117, 205);
+  border: #ccf4ff 5px solid;
 }
 
 @media screen and (min-width:30em) {
@@ -45,6 +46,10 @@ a:hover {
   opacity: 0.8;
 }
 
+.closeButton {
+  background-color: white;
+  color: white;
+}
 .leaflet-control {
   border: 1px solid rgba(0,0,0,0.1) !important;
   border-radius: 2px !important;
@@ -121,3 +126,4 @@ a:hover {
 #description {
   color: white;
 }
+
