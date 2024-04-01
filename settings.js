@@ -3,8 +3,8 @@
 const dataLocation = 'data/veri.json';
 
 // Map's initial center, and zoom level
-const mapCenter = [41.65, -72.7];
-const mapZoom = 9;
+const mapCenter = [39.6433333333,31.9861111111];
+const mapZoom = 6;
 
 // Marker icon height and width
 const iconHeight = 11;
