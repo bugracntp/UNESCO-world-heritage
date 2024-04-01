@@ -64,9 +64,10 @@ var updateSidebar = function (marker) {
     // Populate place information into the sidebar
     $('#placeInfo').animate({ opacity: 0.5 }, 300).promise().done(function () {
       $('#placeInfo h2').html(d.name_en);
-      $('#placeInfo h3').html(d.category);
-      $('#placeInfo h4').html(d.danger === 1 ? 'In Danger' : 'Safe');
-      $('#placeInfo h4').addClass(d.danger === 1 ? 'danger' : 'safe');
+      $('#placeInfo h3').html(d.states_name_en + ' - ' + d.region_en);
+      $('#placeInfo h4').html("Type: "+  d.category);
+      $('#placeInfo h5').html("Danger class: " + (d.danger === 1 ? 'In Danger' : 'Safe'));
+      $('#placeInfo h5').addClass(d.danger === 1 ? 'danger' : 'safe');
 
 
       $('#description').html(d.short_description_en);

@@ -46,10 +46,6 @@ a:hover {
   opacity: 0.8;
 }
 
-.closeButton {
-  background-color: white;
-  color: white;
-}
 .leaflet-control {
   border: 1px solid rgba(0,0,0,0.1) !important;
   border-radius: 2px !important;
@@ -107,12 +103,14 @@ a:hover {
 }
 
 #placeInfo h2 {
-  margin: 0;
-  color: white;
+  color: #ccf4ff;
 }
 
 #placeInfo h3 {
-  margin: 0;
+  color: white;
+}
+
+#placeInfo h4 {
   color: white;
 }
 
