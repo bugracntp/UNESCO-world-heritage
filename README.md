@@ -1,3 +1,10 @@
+# UNESCO World Heritage Maping
+
+This application visualizes UNESCO World Heritage Sites on an interactive map. Users can explore cultural and natural heritage sites, obtain information, and directly visit UNESCO's official website to learn more. I used dataset from UNESCO's official website. This data set was .xls.
+
+## Data Preparation 
+On offical website has 4 file type. For data preparation firstly convert file to .json. After this cleaning dataset with js.
+
 ## Edit map title and default text
 Go to `index.html` to edit the map title, introductory text, and footer, which always appears in the sidebar when users click on different places.
 
@@ -31,10 +38,18 @@ const iconHeight = 40;
 const iconWidth = 40;
 ```
 ## Share web links with URL hash
-When a place icon is clicked, its name is added to the hash part of the URL, and appears in your browser like this:
-
-`https://handsondataviz.github.io/leaflet-point-map-sidebar/#Frog-Bridge`
 
 This feature enables you to share a particular place with others on social media, because when the map is loaded initially,
 it activates the place from hash if it exists instead of centering
 on default `mapCenter` (as defined in `settings.js`).
+
+## Application Views
+ - All categories are selected.
+   ![image](https://github.com/bugracntp/UNESCO-world-heritage/assets/66384957/cd889f86-5a41-4cbf-a164-9dc3771dd7cf)
+- Only one category selected
+  ![image](https://github.com/bugracntp/UNESCO-world-heritage/assets/66384957/55f603fa-7ce1-4e8d-8499-f87641a6db36)
+- When select a location from map
+  ![image](https://github.com/bugracntp/UNESCO-world-heritage/assets/66384957/a1b54fdd-148c-43ec-834e-68a8e9312191)
+
+
+
