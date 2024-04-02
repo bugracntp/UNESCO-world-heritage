@@ -129,7 +129,8 @@ var addMarkers = function (data) {
 
   for (var i in data) {
     var d = data[i];
-    if (d.danger === 1)
+    d.danger = data[i].danger === 1 ? "In Danger" : "Safe";
+    if (d.danger === "In Danger")
       InDangerArr.push(d);
     else
       SafeArr.push(d);
@@ -142,9 +143,10 @@ var addMarkers = function (data) {
 
     // Create a slug for URL hash, and add to marker data
     d['slug'] = slugify(d.name_en);
+    
     // Add an empty group if doesn't yet exist
+    if (!categories[d.danger]) { categories[d.danger] = []; }
     if (!categories[d.category]) { categories[d.category] = []; }
-    if (!categories[d.danger]) { categories[d.danger === 1 ? "In Danger" : "Safe"] = []; }
 
     // Create a new place marker
     var m = L.marker(
@@ -165,8 +167,8 @@ var addMarkers = function (data) {
     });
 
     // Add this new place marker to an appropriate group
+    categories[d.danger].push(m);
     categories[d.category].push(m);
-    categories[d.danger === 1 ? "In Danger" : "Safe"].push(m);
     if (d.slug === hashName) { activeMarker = m; }
   }
 
