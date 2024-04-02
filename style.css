@@ -114,6 +114,10 @@ a:hover {
   color: white;
 }
 
+#placeInfo h6 {
+  color: white;
+}
+
 .safe {
   color: rgb(50, 235, 50);
 }

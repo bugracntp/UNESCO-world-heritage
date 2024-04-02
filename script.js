@@ -43,6 +43,7 @@ var updateSidebar = function (marker) {
 
   // Get data bound to the marker
   var d = marker.options.placeInfo;
+  var nextMarker = findNextMarker(marker);
 
   if (L.DomUtil.hasClass(marker._icon, 'markerActive')) {
     // Deselect current icon
@@ -65,10 +66,14 @@ var updateSidebar = function (marker) {
     $('#placeInfo').animate({ opacity: 0.5 }, 300).promise().done(function () {
       $('#placeInfo h2').html(d.name_en);
       $('#placeInfo h3').html(d.states_name_en + ' - ' + d.region_en);
-      $('#placeInfo h4').html("Type: "+  d.category + " - Node Number: " + d.id_no);
-      $('#placeInfo h5').html("Danger class: " + (d.danger === 1 ? 'In Danger' : 'Safe'));
+      $('#placeInfo h4').html("Type: "+  d.category);
+      $('#placeInfo h5').html("Danger class: " + (d.danger));
+      $('#placeInfo h6').html("Next Node: " + nextMarker.name_en);
 
-      $('#placeInfo h5').addClass(d.danger === 1 ? 'danger' : 'safe');
+      if(d.danger === "In Danger")
+        $('#placeInfo h5').addClass('danger');
+      else if(d.danger === "Safe")
+        $('#placeInfo h5').addClass('safe');
 
 
       $('#description').html(d.short_description_en);
@@ -98,6 +103,7 @@ var addLines = function (data, color = "#000000") {
     var d1 = data[i];
     var d2 = data[i + 1];
     lineMemory.push([d1, d2]);  
+
 
     var myLines = [{
       "type": "LineString",
@@ -193,8 +199,9 @@ var addMarkers = function (data) {
   map.on('overlayadd overlayremove', function (eventLayer) {
     var layerName = eventLayer.name;
     if (layerName === "In Danger") {
-      if (eventLayer.type === "overlayadd")
+      if (eventLayer.type === "overlayadd"){
         addLines(InDangerArr, "#b30000");
+      }
       else
         removeLines(InDangerArr);
     }
@@ -236,6 +243,17 @@ function removeLines(linesArray) {
       map.removeLayer(layer);
     }
   });
+}
+
+function findNextMarker(marker) {
+  var nextMarker;
+  for (var i = 0; i < lineMemory.length; i++) {
+    if (lineMemory[i][0].name_en === marker.options.placeInfo.name_en) {
+      nextMarker = lineMemory[i][1];
+      break;
+    }
+  }
+  return nextMarker;
 }
 /*
  * Loads and parses data from a CSV (either local, or published
