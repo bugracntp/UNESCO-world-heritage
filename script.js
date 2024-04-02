@@ -65,8 +65,9 @@ var updateSidebar = function (marker) {
     $('#placeInfo').animate({ opacity: 0.5 }, 300).promise().done(function () {
       $('#placeInfo h2').html(d.name_en);
       $('#placeInfo h3').html(d.states_name_en + ' - ' + d.region_en);
-      $('#placeInfo h4').html("Type: "+  d.category);
+      $('#placeInfo h4').html("Type: "+  d.category + " - Node Number: " + d.id_no);
       $('#placeInfo h5').html("Danger class: " + (d.danger === 1 ? 'In Danger' : 'Safe'));
+
       $('#placeInfo h5').addClass(d.danger === 1 ? 'danger' : 'safe');
 
 
@@ -96,7 +97,7 @@ var addLines = function (data, color = "#000000") {
     }
     var d1 = data[i];
     var d2 = data[i + 1];
-    lineMemory.push([d1, d2]);
+    lineMemory.push([d1, d2]);  
 
     var myLines = [{
       "type": "LineString",
@@ -325,7 +326,7 @@ var initMap = function () {
 
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; Buğra Çantepe <a href="https://www.linkedin.com/in/bugra-cantepe/">LinkedIn</a>',
     subdomains: 'abcd',
     maxZoom: 19
   }).addTo(map);
@@ -333,9 +334,8 @@ var initMap = function () {
   loadData(dataLocation);
 
   // Add data & GitHub links
-  map.attributionControl.setPrefix('Download <a href="'
-    + dataLocation + '" target="_blank">data</a> or \
-    view <a href="http://github.com/handsondataviz/leaflet-point-map-sidebar" target="_blank">code on\
+  map.attributionControl.setPrefix(
+    'view <a href="http://github.com/handsondataviz/leaflet-point-map-sidebar" target="_blank">code on\
     GitHub</a> | created with <a href="http://leafletjs.com" title="A JS library\
     for interactive maps">Leaflet</a>');
 
