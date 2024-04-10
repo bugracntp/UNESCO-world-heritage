@@ -71,9 +71,14 @@ var updateSidebar = function (marker) {
       $('#placeInfo h6').html("Next Node: " + nextMarker.name_en);
 
       if(d.danger === "In Danger")
+      {
         $('#placeInfo h5').addClass('danger');
-      else if(d.danger === "Safe")
+        $('#placeInfo h5').removeClass('safe');
+      }
+      else if(d.danger === "Safe"){
         $('#placeInfo h5').addClass('safe');
+        $('#placeInfo h5').removeClass('danger');
+      }
 
 
       $('#description').html(d.short_description_en);
