@@ -1,15 +1,8 @@
 var data = {};
 var categories = {};
+var lineCategories = {};
 var map;
 var lineMemory = [];
-
-/*
- * Given a string `str`, replaces whitespaces with dashes,
- * and removes nonalphanumeric characters. Used in URL hash.
- */
-var slugify = function (str) {
-  return str.replace(/[^\w ]+/g, '').replace(/ +/g, '-');
-}
 
 /*
  * Resets map view to originally defined `mapCenter` and `mapZoom` in settings.js
@@ -50,7 +43,6 @@ var updateSidebar = function (marker) {
     L.DomUtil.removeClass(marker._icon, 'markerActive');
     resetSidebar();
   } else {
-    location.hash = d.slug;
 
     // Dim map's title
     $('header').addClass('black-50');
@@ -129,35 +121,23 @@ var addLines = function (data, color = "#000000") {
 // Rastgele bir indeks seçmek için yardımcı fonksiyon
 
 var addMarkers = function (data) {
-  var InDangerArr = [];
-  var SafeArr = [];
-  var NatureArr = [];
-  var MixedArr = [];
-  var CulturalArr = [];
-
   var activeMarker;
-  var hashName = decodeURIComponent(location.hash.substr(1));
-
   for (var i in data) {
     var d = data[i];
-    d.danger = data[i].danger === 1 ? "In Danger" : "Safe";
-    if (d.danger === "In Danger")
-      InDangerArr.push(d);
-    else
-      SafeArr.push(d);
-    if (d.category === "Natural")
-      NatureArr.push(d);
-    else if (d.category === "Mixed")
-      MixedArr.push(d);
-    else
-      CulturalArr.push(d);
-
-    // Create a slug for URL hash, and add to marker data
-    d['slug'] = slugify(d.name_en);
     
     // Add an empty group if doesn't yet exist
     if (!categories[d.danger]) { categories[d.danger] = []; }
     if (!categories[d.category]) { categories[d.category] = []; }
+    if (!categories[d.region_en]) { categories[d.region_en] = []; }
+    if (!lineCategories[d.category]) { lineCategories[d.category] = []; }
+    if (!lineCategories[d.danger]) { lineCategories[d.danger] = []; }
+    if (!lineCategories[d.region_en]) { lineCategories[d.region_en] = []; }
+
+    // Add this place to the lineCategories
+    lineCategories[d.region_en].push(d);
+    lineCategories[d.category].push(d);
+    lineCategories[d.danger].push(d);
+
 
     // Create a new place marker
     var m = L.marker(
@@ -180,9 +160,8 @@ var addMarkers = function (data) {
     // Add this new place marker to an appropriate group
     categories[d.danger].push(m);
     categories[d.category].push(m);
-    if (d.slug === hashName) { activeMarker = m; }
+    categories[d.region_en].push(m);
   }
-
   // Transform each array of markers into layerGroup
   for (var g in categories) {
     categories[g] = L.layerGroup(categories[g]);
@@ -190,11 +169,11 @@ var addMarkers = function (data) {
   }
 
   // Add layer control to the map
-  addLines(InDangerArr, "#b30000");
-  addLines(SafeArr, "#249054");
-  addLines(NatureArr, "#3375cd");
-  addLines(MixedArr, "#b30086");
-  addLines(CulturalArr, "#cdba33");
+  addLines(lineCategories["In Danger"], "#b30000");
+  addLines(lineCategories["Safe"], "#249054");
+  addLines(lineCategories["Natural"], "#3375cd");
+  addLines(lineCategories["Mixed"], "#b30086");
+  addLines(lineCategories["Cultural"], "#cdba33");
 
 
   L.control.layers({}, categories, { collapsed: true }).addTo(map);
@@ -205,36 +184,65 @@ var addMarkers = function (data) {
     var layerName = eventLayer.name;
     if (layerName === "In Danger") {
       if (eventLayer.type === "overlayadd"){
-        addLines(InDangerArr, "#b30000");
+        addLines(lineCategories["In Danger"], "#b30000");
       }
       else
-        removeLines(InDangerArr);
+        removeLines(lineCategories["In Danger"]);
     }
     else if (layerName === "Safe") {
       if (eventLayer.type === "overlayadd")
-        addLines(SafeArr, "#249054");
+        addLines(lineCategories["Safe"], "#249054");
       else
-        removeLines(SafeArr);
+        removeLines(lineCategories["Safe"]);
     }
     else if (layerName === "Natural") {
       if (eventLayer.type === "overlayadd")
-        addLines(NatureArr, "#3375cd");
+        addLines(lineCategories["Natural"], "#3375cd");
       else
-        removeLines(NatureArr);
+        removeLines(lineCategories["Natural"]);
     }
     else if (layerName === "Mixed") {
       if (eventLayer.type === "overlayadd")
-        addLines(MixedArr, "#b30086");
+        addLines(lineCategories["Mixed"], "#b30086");
       else
-        removeLines(MixedArr);
+        removeLines(lineCategories["Mixed"]);
     }
     else if (layerName === "Cultural") {
       if (eventLayer.type === "overlayadd")
-        addLines(CulturalArr, "#cdba33");
+        addLines(lineCategories["Cultural"], "#cdba33");
       else
-        removeLines(CulturalArr);
+        removeLines(lineCategories["Cultural"]);
     }
 
+    Object.keys(categories).forEach(function (key) {
+      if(layerName === key){
+        if (eventLayer.type === "overlayadd"){
+          if(key === "In Danger")
+            addLines(lineCategories["In Danger"], "#b30000")
+          else if(key === "Safe")
+            addLines(lineCategories["Safe"], "#249054")
+          else if(key === "Natural")
+            addLines(lineCategories["Natural"], "#3375cd")
+          else if(key === "Mixed")
+            addLines(lineCategories["Mixed"], "#b30086")
+          else if(key === "Cultural")
+            addLines(lineCategories["Cultural"], "#cdba33")
+          else
+            addLines(lineCategories[key]);
+        }
+        else
+          removeLines(lineCategories[key]);
+
+      }
+
+
+
+      if (key !== layerName) {
+        if (eventLayer.type !== "overlayadd") {
+          map.removeLayer(categories[key]);
+        }
+      }
+    });
   });
   // If name in hash, activate it
   if (activeMarker) { activeMarker.fire('click') }
@@ -284,7 +292,7 @@ var loadData = function (loc) {
         justification_en: item.justification_en ? item.justification_en.replace(/<\/?p>/g, "") : "", // <p> etiketlerini kaldır, eğer null ise boş string döndür
         date_inscribed: item.date_inscribed,
         secondary_dates: item.secondary_dates,
-        danger: item.danger,
+        danger: item.danger === 1 ? "In Danger" : "Safe",
         date_end: item.date_end,
         danger_list: item.danger_list,
         longitude: item.longitude,
